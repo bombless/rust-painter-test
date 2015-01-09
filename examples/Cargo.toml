@@ -1,0 +1,8 @@
+[package]
+
+name = "examples"
+version = "0.0.1"
+authors = ["bombless"]
+
+[dependencies.paint]
+path=".."
