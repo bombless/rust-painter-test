@@ -128,11 +128,11 @@ impl Canvas{
 				layer.draw(projection).over(&mut canvas[index])
 			}
 		}
-		writer.write_line("P3");
-		writer.write_line(&*format!("{} {}", self.size.width, self.size.height));
-		writer.write_line("255");
+		writer.write_line("P3").unwrap();
+		writer.write_line(&*format!("{} {}", self.size.width, self.size.height)).unwrap();
+		writer.write_line("255").unwrap();
 		for i in canvas.iter(){
-			writer.write_line(&*format!("{} {} {}", i.r(), i.g(), i.b()));
+			writer.write_line(&*format!("{} {} {}", i.r(), i.g(), i.b())).unwrap();
 		}
 	}
 }
