@@ -1,4 +1,3 @@
-extern crate getopts;
 extern crate paint;
 use paint::{ Layer, Canvas, Projection, Color, Size };
 
@@ -22,6 +21,42 @@ impl Layer for BigWhiteCircle{
 	}
 }
 
+struct Position(f32, f32, f32);
+
+struct Light{
+	origin :Position,
+}
+
+struct Ball{
+	origin :Position,
+	radius :f32
+}
+
+struct Scene{
+	light :Light,
+	ball :Ball,
+	eye :Position
+}
+
+impl Scene{
+	fn new()->Scene{
+		let ball = Ball{ origin: Position(3f32, 30f32, 3f32), radius: 3f32 };
+		let light = Light{ origin: Position(0f32, 0f32, 0f32) };
+		let eye = Position(3f32, 0f32, 3f32);
+		Scene{ ball: ball, light: light, eye: eye }
+	}
+}
+
+struct TwoLayer<U :Layer, V :Layer>{
+	a :U, b :V
+}
+
+impl<U :Layer, V :Layer> Layer for TwoLayer<U, V>{
+	fn draw(&self, projection :Projection)->Color{
+		projection.proxy_split(|p|self.a.draw(p), |p|self.b.draw(p))
+	}
+}
+
 fn main(){
 	let args = std::os::args();
 	if args.len() == 2{
@@ -29,8 +64,9 @@ fn main(){
 			Some(ref path) =>{
 				match std::io::fs::File::create(path){
 					Ok(ref mut file) =>{
-						let canvas = Canvas::new(Color::rgb(0, 200, 0), Size::new(480, 360));
-						canvas.render(BigWhiteCircle, file);
+						let canvas = Canvas::new(Color::rgb(0, 200, 0), Size::new(260, 520));
+						let layer = TwoLayer{ a: BigWhiteCircle, b: BigWhiteCircle };
+						canvas.render(layer, file);
 					},
 					Err(x)=>println!("{}", x)
 				}
